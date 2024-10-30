@@ -188,6 +188,7 @@ private:
     void play_sequential() {
         // Implementar a estratégia sequencial de jogadas
         int linha, coluna;
+    
         do{
             linha = proximo_movimento / 3;
             coluna = proximo_movimento % 3;
@@ -196,6 +197,7 @@ private:
         
         game.make_move(symbol,linha, coluna);
         proximo_movimento++;
+        
         return;
     }
 
@@ -213,10 +215,17 @@ private:
     }
 };
 
+char getPrimeiroJogador() {
+    char jogadores[] = {'X', 'O'};
+    int tamArray = sizeof(jogadores) / sizeof(jogadores[0]);
+    std::srand(static_cast<unsigned int>(std::time(0)));
+    int randomIndex = std::rand() % tamArray;  // Gerar número aleatório
+    return jogadores[randomIndex];             
+}
 
 std::mutex mutex;
 std::condition_variable cv; 
-char jogadorAtual = 'X'; // primeiro a jogar
+char jogadorAtual = getPrimeiroJogador(); // primeiro a jogar
 bool fim_jogo = false;
 
 void jogarJogoVelha(TicTacToe& jogo, Player& jogador){
@@ -268,10 +277,10 @@ int main() {
 
     TicTacToe novoJogo = TicTacToe();
     
-    //Player jogador1(novoJogo, 'X', "sequencial"); 
+    Player jogador1(novoJogo, 'X', "sequencial"); 
     //Player jogador2(novoJogo, 'O', "sequencial");
 
-    Player jogador1(novoJogo, 'X', "aleatorio"); 
+    //Player jogador1(novoJogo, 'X', "aleatorio"); 
     Player jogador2(novoJogo, 'O', "aleatorio");
 
     // Criar as threads para os jogadores
