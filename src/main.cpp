@@ -277,10 +277,10 @@ int main() {
 
     TicTacToe novoJogo = TicTacToe();
     
-    Player jogador1(novoJogo, 'X', "sequencial"); 
+    //Player jogador1(novoJogo, 'X', "sequencial"); 
     //Player jogador2(novoJogo, 'O', "sequencial");
 
-    //Player jogador1(novoJogo, 'X', "aleatorio"); 
+    Player jogador1(novoJogo, 'X', "aleatorio"); 
     Player jogador2(novoJogo, 'O', "aleatorio");
 
     // Criar as threads para os jogadores
