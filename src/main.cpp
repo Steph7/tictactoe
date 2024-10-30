@@ -186,18 +186,14 @@ public:
 private:
     int proximo_movimento = 0;
     void play_sequential() {
-        // Implementar a estratégia sequencial de jogadas
-        int linha, coluna;
-    
-        do{
-            linha = proximo_movimento / 3;
-            coluna = proximo_movimento % 3;
-            proximo_movimento++;
-        } while(!game.movimentoOK(linha, coluna));
-        
-        game.make_move(symbol,linha, coluna);
-        proximo_movimento++;
-        
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (game.movimentoOK(i,j)){
+                    game.make_move(symbol,i, j);
+                    return;
+                }
+            }
+        }
         return;
     }
 
@@ -277,10 +273,10 @@ int main() {
 
     TicTacToe novoJogo = TicTacToe();
     
-    //Player jogador1(novoJogo, 'X', "sequencial"); 
+    Player jogador1(novoJogo, 'X', "sequencial"); 
     //Player jogador2(novoJogo, 'O', "sequencial");
 
-    Player jogador1(novoJogo, 'X', "aleatorio"); 
+    //Player jogador1(novoJogo, 'X', "aleatorio"); 
     Player jogador2(novoJogo, 'O', "aleatorio");
 
     // Criar as threads para os jogadores
