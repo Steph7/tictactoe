@@ -95,23 +95,30 @@ public:
     bool check_win() {
         // Verificar se o jogador atual venceu o jogo
         for(int i = 0; i < 3; i++){
-            // Verificar as linhas e colunas
-            if((board[i][0]==current_player && board[i][1]==current_player && board[i][2]==current_player) ||
-               (board[0][i]==current_player && board[1][i]==current_player && board[2][i]==current_player)){
+            // Verificar as linhas
+            if(board[i][0]==current_player && board[i][1]==current_player && board[i][2]==current_player){
                 game_over = true;
                 return true;
             }
-            // Verificar as diagonais
-            else if((board[0][0]==current_player && board[1][1]==current_player && board[2][2]==current_player) || 
-                    (board[0][2]==current_player && board[1][1]==current_player && board[2][0]==current_player)){
+            // Verificar colunas
+            else if(board[0][i]==current_player && board[1][i]==current_player && board[2][i]==current_player){
                 game_over = true;
                 return true;
-            }
-            else{
-                return false;
             }
         }
-        return false;
+        // Verificar diagonal 1
+        if(board[0][0]==current_player && board[1][1]==current_player && board[2][2]==current_player){ 
+            game_over = true;
+            return true;
+        }
+        // Verificar diagonal 2
+        else if(board[0][2]==current_player && board[1][1]==current_player && board[2][0]==current_player){
+            game_over = true;
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     bool check_draw() {
@@ -180,15 +187,15 @@ private:
     int proximo_movimento = 0;
     void play_sequential() {
         // Implementar a estratégia sequencial de jogadas
-        int linha = proximo_movimento / 3;
-        int coluna = proximo_movimento % 3;
-        if(game.movimentoOK(linha, coluna)){
-            game.make_move(symbol,linha, coluna);
-            std::cout << std::endl;
-            std::cout << "Linha " << linha << "| Coluna " << coluna << std::endl;
+        int linha, coluna;
+        do{
+            linha = proximo_movimento / 3;
+            coluna = proximo_movimento % 3;
             proximo_movimento++;
-            return;
-        }
+        } while(!game.movimentoOK(linha, coluna));
+        
+        game.make_move(symbol,linha, coluna);
+        proximo_movimento++;
         return;
     }
 
@@ -219,6 +226,7 @@ void jogarJogoVelha(TicTacToe& jogo, Player& jogador){
         cv.wait(lock, [&]() { return jogadorAtual == jogador.getId() || jogo.is_game_over() || fim_jogo; });
 
         if(fim_jogo){
+            cv.notify_all();
             return;
         }
 
@@ -228,14 +236,20 @@ void jogarJogoVelha(TicTacToe& jogo, Player& jogador){
         system("clear");
 
         if(jogo.check_win()){
+            jogo.display_board();
+            std::cout << std::endl;
             std::cout << "O vencedor é: " << jogo.get_winner() << "!"  << std::endl;
             fim_jogo = true;
+            cv.notify_all();
             return;
         }
 
         if(jogo.check_draw()){
+            jogo.display_board();
+            std::cout << std::endl;
             std::cout << "Resultado: " << jogo.get_winner() << "!"  << std::endl;
             fim_jogo = true;
+            cv.notify_all();
             return;
         }
 
@@ -254,8 +268,11 @@ int main() {
 
     TicTacToe novoJogo = TicTacToe();
     
+    //Player jogador1(novoJogo, 'X', "sequencial"); 
+    //Player jogador2(novoJogo, 'O', "sequencial");
+
     Player jogador1(novoJogo, 'X', "aleatorio"); 
-    Player jogador2(novoJogo, 'O', "sequencial");
+    Player jogador2(novoJogo, 'O', "aleatorio");
 
     // Criar as threads para os jogadores
     std::thread J1(jogarJogoVelha, std::ref(novoJogo), std::ref(jogador1));
